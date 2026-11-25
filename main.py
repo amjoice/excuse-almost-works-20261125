@@ -14,7 +14,11 @@ landlord's orders outrank the boss's.
 
 import os
 
-LINE = "Gas safety check, I have to stay in till twelve, landlord's orders"
+_PARTS = [
+    "Gas safety check, I have to stay in till twelve,",
+    "landlord's orders",
+]
+LINE = " ".join(_PARTS)
 
 
 def validate(text: str) -> str:
@@ -32,13 +36,17 @@ def validate(text: str) -> str:
     return cleaned
 
 
+def _write_entry(path: str, text: str) -> None:
+    """Write the validated line to path with fixed permissions."""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as handle:
+        handle.write(text)
+    os.chmod(path, 0o644)
+
+
 def main() -> None:
     text = validate(LINE)
-    os.makedirs("/output", exist_ok=True)
-    path = "/output/entry.txt"
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(text)
-    os.chmod(path, 0o644)
+    _write_entry(os.path.join("/output", "entry.txt"), text)
 
 
 if __name__ == "__main__":
